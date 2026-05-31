@@ -1,19 +1,24 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SearchBar } from '../common/SearchBar';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navLinks = [
     { to: '/', label: '首页' },
-    { to: '/categories', label: '分类' },
+    { to: '/category/productivity', label: '分类' },
     { to: '/favorites', label: '收藏' },
     { to: '/admin', label: '管理后台' },
   ];
 
   const handleSearch = (keyword: string) => {
-    console.log('Search:', keyword);
+    if (keyword.trim()) {
+      navigate(`/search?q=${encodeURIComponent(keyword)}`);
+    } else {
+      navigate('/search');
+    }
   };
 
   return (

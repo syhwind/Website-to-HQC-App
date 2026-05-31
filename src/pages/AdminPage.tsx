@@ -206,7 +206,7 @@ export default function AdminPage() {
           title="管理应用"
           description="编辑、修改或下架应用"
           icon="⚙️"
-          to="/admin/manage"
+          to="/admin/apps"
         />
       </div>
 

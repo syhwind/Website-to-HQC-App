@@ -4,7 +4,7 @@ import { mockApps, mockCategories } from '../data/mockApps';
 import { CategoryTag } from '../components/common/CategoryTag';
 import { useFavoritesStore } from '../context/FavoritesContext';
 
-export const AppDetailPage = () => {
+export default function AppDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(null);

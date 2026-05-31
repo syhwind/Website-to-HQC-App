@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export const Footer = () => {
   return (
     <footer className="bg-slate-800 text-slate-300 mt-auto">
@@ -14,24 +16,24 @@ export const Footer = () => {
             <h3 className="text-white font-semibold text-lg mb-4">快速链接</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/" className="hover:text-white transition-colors">
+                <Link to="/" className="hover:text-white transition-colors">
                   首页
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/categories" className="hover:text-white transition-colors">
+                <Link to="/category/productivity" className="hover:text-white transition-colors">
                   应用分类
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/favorites" className="hover:text-white transition-colors">
+                <Link to="/favorites" className="hover:text-white transition-colors">
                   我的收藏
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/admin" className="hover:text-white transition-colors">
+                <Link to="/admin" className="hover:text-white transition-colors">
                   管理后台
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
