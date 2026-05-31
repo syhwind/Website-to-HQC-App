@@ -4,6 +4,32 @@ import { mockApps, mockCategories } from '../data/mockApps';
 import { CategoryTag } from '../components/common/CategoryTag';
 import { useFavoritesStore } from '../context/FavoritesContext';
 
+const RatingStars = ({ rating }: { rating: number }) => {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  return (
+    <div className="flex items-center">
+      {[...Array(5)].map((_, i) => {
+        let starClass = 'text-gray-300';
+        if (i < fullStars) {
+          starClass = 'text-yellow-400';
+        } else if (i === fullStars && hasHalfStar) {
+          starClass = 'text-yellow-400';
+        }
+        return (
+          <svg
+          key={i}
+          className={`w-5 h-5 fill-current ${starClass}`}
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      );}
+    </div>
+  );
+};
+
 export default function AppDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -91,7 +117,7 @@ export default function AppDetailPage() {
               />
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-3">{app.name}</h1>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500 mb-4">
                   <div className="flex items-center">
                     <span className="text-slate-400 mr-2">开发商：</span>
                     <span>{app.developer}</span>
@@ -105,6 +131,13 @@ export default function AppDetailPage() {
                     <span>{app.department}</span>
                   </div>
                 </div>
+                {app.averageRating && app.reviewCount && (
+                  <div className="flex items-center gap-2">
+                    <RatingStars rating={app.averageRating} />
+                    <span className="text-slate-600 font-medium">{app.averageRating.toFixed(1)}</span>
+                    <span className="text-slate-500">({app.reviewCount}条评价)</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -149,10 +182,51 @@ export default function AppDetailPage() {
             </div>
           </div>
 
-          <div className="p-6 sm:p-8 border-b border-slate-100">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">应用介绍</h2>
-            <p className="text-slate-600 leading-relaxed whitespace-pre-line">{app.description}</p>
-          </div>
+          {app.introduction && (
+            <div className="p-6 sm:p-8 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 mb-4">应用简介</h2>
+              <p className="text-slate-600 leading-relaxed whitespace-pre-line">{app.introduction}</p>
+            </div>
+          )}
+
+          {app.features && app.features.length > 0 && (
+            <div className="p-6 sm:p-8 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 mb-4">核心功能</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {app.features.map((feature, index) => (
+                  <div key={index} className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-slate-700">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {app.videoUrl && (
+            <div className="p-6 sm:p-8 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 mb-4">视频介绍</h2>
+              <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden">
+                <iframe
+                  src={app.videoUrl}
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="应用介绍视频"
+                />
+              </div>
+            </div>
+          )}
 
           {app.screenshots && app.screenshots.length > 0 && (
             <div className="p-6 sm:p-8 border-b border-slate-100">
@@ -190,7 +264,87 @@ export default function AppDetailPage() {
             </div>
           )}
 
-          <div className="p-6 sm:p-8">
+          {app.contacts && app.contacts.length > 0 && (
+            <div className="p-6 sm:p-8 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800 mb-4">联系人</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {app.contacts.map((contact, index) => (
+                  <div key={index} className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                    <img
+                      src={contact.avatar || `https://picsum.photos/seed/contact${index}/100`}
+                      alt={contact.name}
+                      className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-800">{contact.name}</h3>
+                      <p className="text-sm text-slate-500 mb-2">{contact.role}</p>
+                      <div className="space-y-1 text-sm">
+                        <a
+                          href={`mailto:${contact.email}`}
+                          className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+                        >
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                          {contact.email}
+                        </a>
+                        <a
+                          href={`tel:${contact.phone}`}
+                          className="flex items-center text-slate-600 hover:text-slate-700 transition-colors"
+                        >
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                            />
+                          </svg>
+                          {contact.phone}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {app.reviews && app.reviews.length > 0 && (
+            <div className="p-6 sm:p-8">
+              <h2 className="text-lg font-semibold text-slate-800 mb-4">用户评价</h2>
+              <div className="space-y-4">
+                {app.reviews.map((review) => (
+                  <div key={review.id} className="p-4 bg-slate-50 rounded-xl">
+                    <div className="flex items-start gap-3 mb-2">
+                      <img
+                        src={review.userAvatar || `https://picsum.photos/seed/${review.userId}/100`}
+                        alt={review.userName}
+                        className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium text-slate-800">{review.userName}</span>
+                          <span className="text-sm text-slate-500">{formatDate(review.createdAt)}</span>
+                        </div>
+                        <div className="flex items-center mb-2">
+                          <RatingStars rating={review.rating} />
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-slate-600 ml-13">{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="p-6 sm:p-8 border-t border-slate-100">
             <h2 className="text-lg font-semibold text-slate-800 mb-4">基本信息</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-slate-50 rounded-xl p-4">
@@ -228,7 +382,7 @@ export default function AppDetailPage() {
                     />
                   </svg>
                   <span className="font-medium">{app.viewCount.toLocaleString()}</span>
-                  <span className="text-slate-400 ml-1">次</span>
+                  <span className="text-slate-500 ml-1">次</span>
                 </div>
               </div>
               <div className="bg-slate-50 rounded-xl p-4">
@@ -275,4 +429,4 @@ export default function AppDetailPage() {
       </div>
     </div>
   );
-};
+}

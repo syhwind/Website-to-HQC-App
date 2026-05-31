@@ -1,3 +1,21 @@
+export interface Contact {
+  name: string;
+  role: string;
+  email: string;
+  phone: string;
+  avatar?: string;
+}
+
+export interface Review {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 export interface App {
   id: string;
   name: string;
@@ -15,6 +33,13 @@ export interface App {
   favoriteCount: number;
   createdAt: string;
   isFeatured?: boolean;
+  videoUrl?: string;
+  introduction?: string;
+  features?: string[];
+  contacts?: Contact[];
+  reviews?: Review[];
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 export interface Category {
