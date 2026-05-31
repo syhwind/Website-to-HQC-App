@@ -1,22 +1,29 @@
 {
-  "name": "app-store-server-tests",
+  "name": "app-store-server",
   "version": "1.0.0",
-  "description": "企业内部应用发布平台测试套件",
-  "main": "index.js",
+  "description": "企业内部应用发布平台后端",
+  "main": "src/app.js",
   "scripts": {
+    "dev": "node src/app.js",
+    "start": "node src/app.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:api": "vitest run api.test.js",
     "test:consistency": "vitest run consistency.test.js"
   },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.0"
+  },
   "devDependencies": {
     "vitest": "^1.2.0",
     "@vitest/coverage-v8": "^1.2.0",
     "supertest": "^6.3.4",
     "node-fetch": "^3.3.2"
-  },
-  "dependencies": {
-    "uuid": "^9.0.0"
   }
 }
