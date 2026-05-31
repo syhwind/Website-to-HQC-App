@@ -1,26 +1,22 @@
 {
-  "name": "app-store-server",
+  "name": "app-store-server-tests",
   "version": "1.0.0",
-  "description": "企业内部应用发布平台后端服务",
-  "main": "src/app.js",
+  "description": "企业内部应用发布平台测试套件",
+  "main": "index.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "db:init": "node src/db/init.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "multer": "^1.4.5-lts.1",
-    "dm-driver": "^1.0.0",
-    "uuid": "^9.0.0",
-    "body-parser": "^1.20.2"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:api": "vitest run api.test.js",
+    "test:consistency": "vitest run consistency.test.js"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "vitest": "^1.2.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "supertest": "^6.3.4",
+    "node-fetch": "^3.3.2"
   },
-  "keywords": ["enterprise", "app-store", "dm-database"],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
 }
