@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface AppQueryParams {
   page?: number;
@@ -10,7 +10,16 @@ interface AppQueryParams {
 
 // 简单的 fetch 封装
 const fetchApi = async (url: string, options?: RequestInit) => {
-  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+  // 构建完整的 URL
+  let fullUrl: string;
+  if (url.startsWith('http')) {
+    fullUrl = url;
+  } else if (url.startsWith('/api')) {
+    fullUrl = url;
+  } else {
+    fullUrl = `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+  }
+  
   try {
     const response = await fetch(fullUrl, {
       headers: {
@@ -27,7 +36,14 @@ const fetchApi = async (url: string, options?: RequestInit) => {
     return response.json();
   } catch (error) {
     console.error('API 请求失败:', error);
-    throw error;
+    // 给调用者返回一个包含错误信息的对象，而不是抛出错误
+    return {
+      success: false,
+      error: {
+        code: 'NETWORK_ERROR',
+        message: '网络请求失败，请稍后重试',
+      },
+    };
   }
 };
 
