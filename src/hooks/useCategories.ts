@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { categoryService } from '../services/api';
+import { Category } from '../types';
 
 export function useCategories() {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchCategories = async () => {
     try {
@@ -19,7 +20,7 @@ export function useCategories() {
         throw new Error(response.error?.message || '获取分类列表失败');
       }
     } catch (err) {
-      setError(err);
+      setError(err as Error);
       console.error('获取分类列表失败:', err);
     } finally {
       setLoading(false);
@@ -37,10 +38,10 @@ export function useCategories() {
   return { categories, loading, error, refetch };
 }
 
-export function useCategory(id) {
-  const [category, setCategory] = useState(null);
+export function useCategory(id: string) {
+  const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchCategory = async () => {
     if (!id) return;
@@ -57,7 +58,7 @@ export function useCategory(id) {
         throw new Error(response.error?.message || '获取分类详情失败');
       }
     } catch (err) {
-      setError(err);
+      setError(err as Error);
       console.error('获取分类详情失败:', err);
     } finally {
       setLoading(false);

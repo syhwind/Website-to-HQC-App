@@ -1,5 +1,13 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+interface AppQueryParams {
+  page?: number;
+  pageSize?: number;
+  category?: string;
+  keyword?: string;
+  sortBy?: string;
+}
+
 // 简单的 fetch 封装
 const fetchApi = async (url: string, options?: RequestInit) => {
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
@@ -24,7 +32,7 @@ const fetchApi = async (url: string, options?: RequestInit) => {
 };
 
 export const appService = {
-  getApps: async (params = {}) => {
+  getApps: async (params: AppQueryParams = {}) => {
     const { page = 1, pageSize = 12, category, keyword, sortBy } = params;
     const queryParams = new URLSearchParams();
     

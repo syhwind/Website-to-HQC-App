@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { favoriteService } from '../services/api';
+import { App } from '../types';
 
-export function useFavorites(userId) {
-  const [favorites, setFavorites] = useState([]);
+export function useFavorites(userId: string) {
+  const [favorites, setFavorites] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchFavorites = async () => {
     if (!userId) return;
@@ -21,7 +22,7 @@ export function useFavorites(userId) {
         throw new Error(response.error?.message || '获取收藏列表失败');
       }
     } catch (err) {
-      setError(err);
+      setError(err as Error);
       console.error('获取收藏列表失败:', err);
     } finally {
       setLoading(false);
@@ -32,7 +33,7 @@ export function useFavorites(userId) {
     fetchFavorites();
   }, [userId]);
 
-  const addFavorite = async (appId) => {
+  const addFavorite = async (appId: string) => {
     try {
       const response = await favoriteService.add(userId, appId);
       
@@ -48,7 +49,7 @@ export function useFavorites(userId) {
     }
   };
 
-  const removeFavorite = async (appId) => {
+  const removeFavorite = async (appId: string) => {
     try {
       const response = await favoriteService.remove(userId, appId);
       
@@ -64,8 +65,8 @@ export function useFavorites(userId) {
     }
   };
 
-  const isFavorite = (appId) => {
-    return favorites.some(fav => fav.appId === appId);
+  const isFavorite = (appId: string) => {
+    return favorites.some(fav => (fav as any).appId === appId || fav.id === appId);
   };
 
   const refetch = () => {

@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import { reviewService } from '../services/api';
+import { Review } from '../types';
 
-export function useReviews(appId, params = {}) {
-  const [reviews, setReviews] = useState([]);
+interface ReviewQueryParams {
+  page?: number;
+  pageSize?: number;
+}
+
+export function useReviews(appId: string, params: ReviewQueryParams = {}) {
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     averageRating: 0,
@@ -20,7 +26,7 @@ export function useReviews(appId, params = {}) {
       setLoading(true);
       setError(null);
       
-      const response = await reviewService.getByApp(appId, params);
+      const response = await reviewService.getByApp(appId);
       
       if (response.success) {
         setReviews(response.data.items);
@@ -35,7 +41,7 @@ export function useReviews(appId, params = {}) {
         throw new Error(response.error?.message || '获取评价列表失败');
       }
     } catch (err) {
-      setError(err);
+      setError(err as Error);
       console.error('获取评价列表失败:', err);
     } finally {
       setLoading(false);
@@ -46,7 +52,7 @@ export function useReviews(appId, params = {}) {
     fetchReviews();
   }, [appId, params.page]);
 
-  const addReview = async (reviewData) => {
+  const addReview = async (reviewData: any) => {
     try {
       const response = await reviewService.create(appId, reviewData);
       

@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react';
 import { appService } from '../services/api';
+import { App } from '../types';
 
-export function useApps(params = {}) {
-  const [apps, setApps] = useState([]);
+interface AppQueryParams {
+  page?: number;
+  pageSize?: number;
+  category?: string;
+  keyword?: string;
+  sortBy?: string;
+}
+
+export function useApps(params: AppQueryParams = {}) {
+  const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [pagination, setPagination] = useState({
     total: 0,
     page: 1,
@@ -31,7 +40,7 @@ export function useApps(params = {}) {
         throw new Error(response.error?.message || '获取应用列表失败');
       }
     } catch (err) {
-      setError(err);
+      setError(err as Error);
       console.error('获取应用列表失败:', err);
     } finally {
       setLoading(false);
