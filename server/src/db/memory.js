@@ -348,35 +348,64 @@ module.exports = {
   
   reviews: {
     getByApp: (appId) => {
-      const appReviews = reviews.filter(r => r.appId === appId);
-      const sorted = appReviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      return {
-        items: sorted.slice(0, 10),
-        averageRating: appReviews.length > 0 
-          ? appReviews.reduce((sum, r) => sum + r.rating, 0) / appReviews.length 
-          : 0,
-        count: appReviews.length
-      };
+      try {
+        const appReviews = reviews.filter(r => r.appId === appId);
+        const sorted = appReviews.sort((a, b) => {
+          try {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          } catch {
+            return 0;
+          }
+        });
+        const averageRating = appReviews.length > 0 
+          ? appReviews.reduce((sum, r) => sum + (typeof r.rating === 'number' ? r.rating : 5), 0) / appReviews.length 
+          : 0;
+        return {
+          items: sorted.slice(0, 10),
+          averageRating: averageRating,
+          count: appReviews.length
+        };
+      } catch (error) {
+        console.error('获取评价列表失败:', error);
+        return {
+          items: [],
+          averageRating: 0,
+          count: 0
+        };
+      }
     },
     
     add: (appId, data) => {
+      // 安全检查
+      const safeData = data || {};
+      const rating = typeof safeData.rating === 'number' 
+        ? Math.max(1, Math.min(5, safeData.rating)) 
+        : 5;
+      
       const newReview = {
         id: uuidv4(),
-        appId,
-        userId: data.userId,
-        userName: data.userName,
-        userAvatar: data.userAvatar || '',
-        rating: data.rating,
-        comment: data.comment,
+        appId: appId || '',
+        userId: safeData.userId || 'anonymous',
+        userName: safeData.userName || '匿名用户',
+        userAvatar: safeData.userAvatar || '',
+        rating: rating,
+        comment: safeData.comment || '',
         createdAt: new Date().toISOString()
       };
       reviews.push(newReview);
       
-      const app = apps.find(a => a.id === appId);
-      if (app) {
-        const appReviews = reviews.filter(r => r.appId === appId);
-        app.reviewCount = appReviews.length;
-        app.rating = appReviews.reduce((sum, r) => sum + r.rating, 0) / appReviews.length;
+      try {
+        const app = apps.find(a => a.id === appId);
+        if (app) {
+          const appReviews = reviews.filter(r => r.appId === appId);
+          app.reviewCount = appReviews.length;
+          app.rating = appReviews.length > 0 
+            ? appReviews.reduce((sum, r) => sum + (typeof r.rating === 'number' ? r.rating : 5), 0) / appReviews.length 
+            : 0;
+        }
+      } catch (error) {
+        console.error('更新应用评分失败:', error);
+        // 即使更新评分失败，也不影响评价的创建
       }
       
       return newReview;
