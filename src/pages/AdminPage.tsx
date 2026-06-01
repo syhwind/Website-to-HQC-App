@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { mockApps } from '../data/mockApps';
+import { useTheme, themes } from '../hooks/useTheme';
 
 function StatCard({
   title,
@@ -52,7 +53,7 @@ function QuickAction({
       to={to}
       className={`block p-6 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
         primary
-          ? 'bg-[#2563EB] text-white'
+          ? 'bg-primary-600 text-white'
           : 'bg-white shadow-sm hover:bg-white'
       }`}
     >
@@ -61,10 +62,10 @@ function QuickAction({
           {icon}
         </div>
         <div>
-          <h3 className={`font-semibold text-lg ${primary ? '' : 'text-[#1E293B]'}`}>
+          <h3 className={`font-semibold text-lg ${primary ? '' : 'text-slate-800'}`}>
             {title}
           </h3>
-          <p className={`text-sm ${primary ? 'text-white/80' : 'text-[#64748B]'}`}>
+          <p className={`text-sm ${primary ? 'text-white/80' : 'text-slate-600'}`}>
             {description}
           </p>
         </div>
@@ -155,6 +156,7 @@ function RecentAppsTable() {
 }
 
 export default function AdminPage() {
+  const { theme, setTheme } = useTheme();
   const totalApps = mockApps.length;
   const activeApps = mockApps.filter((app) => app.status === 'active').length;
   const totalViews = mockApps.reduce((sum, app) => sum + app.viewCount, 0);
@@ -208,6 +210,33 @@ export default function AdminPage() {
           icon="⚙️"
           to="/admin/apps"
         />
+      </div>
+
+      {/* 主题设置卡片 */}
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <h3 className="font-semibold text-lg text-slate-800 mb-4">主题设置</h3>
+        <p className="text-sm text-slate-600 mb-4">选择您喜欢的配色方案</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+          {themes.map((t) => (
+            <button
+              key={t.value}
+              onClick={() => setTheme(t.value)}
+              className={`flex flex-col items-center p-4 rounded-xl transition-all border-2 ${
+                theme === t.value 
+                  ? 'border-primary-500 bg-primary-50' 
+                  : 'border-transparent bg-slate-50 hover:bg-slate-100'
+              }`}
+            >
+              <span 
+                className="w-10 h-10 rounded-full mb-2"
+                style={{ backgroundColor: t.color }}
+              />
+              <span className="text-sm font-medium text-slate-700">
+                {t.label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <RecentAppsTable />

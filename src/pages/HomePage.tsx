@@ -8,7 +8,7 @@ function AppCard({ app, featured = false }: { app: App; featured?: boolean }) {
     <Link to={`/app/${app.id}`}>
       <div
         className={`bg-white rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer ${
-          featured ? 'border-2 border-[#2563eb]' : 'shadow-sm'
+          featured ? 'border-2 border-primary-600' : 'shadow-sm'
         }`}
       >
         <div className="flex items-start space-x-4">
@@ -27,7 +27,7 @@ function AppCard({ app, featured = false }: { app: App; featured?: boolean }) {
                 {app.name}
               </h3>
               {app.isFeatured && (
-                <span className="px-2 py-1 bg-[#2563eb] text-white text-xs rounded-full">
+                <span className="px-2 py-1 bg-primary-600 text-white text-xs rounded-full">
                   精选
                 </span>
               )}
@@ -59,7 +59,7 @@ function SectionHeader({
       {linkTo && (
         <Link
           to={linkTo}
-          className="text-[#2563eb] hover:text-[#1d4ed8] transition-colors text-sm font-medium"
+          className="text-primary-600 hover:text-primary-700 transition-colors text-sm font-medium"
         >
           查看更多 →
         </Link>
@@ -178,7 +178,7 @@ export default function HomePage() {
         setLoading(true);
         setError(null);
         
-        const API_BASE_URL = 'http://localhost:3001/api';
+        const API_BASE_URL = '/api';
         
         const [appsRes, categoriesRes] = await Promise.all([
           fetch(`${API_BASE_URL}/apps?page=1&pageSize=50`).then(r => r.json()),
@@ -214,7 +214,7 @@ export default function HomePage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">加载中...</p>
         </div>
       </div>
@@ -230,7 +230,7 @@ export default function HomePage() {
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
             重新加载
           </button>

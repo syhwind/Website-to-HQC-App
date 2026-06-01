@@ -372,7 +372,7 @@ export default function AppDetailPage() {
                       <div className="space-y-1 text-sm">
                         <a
                           href={`mailto:${contact.email}`}
-                          className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+                          className="flex items-center text-primary-600 hover:text-primary-700 transition-colors"
                         >
                           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -411,14 +411,14 @@ export default function AppDetailPage() {
               <h2 className="text-lg font-semibold text-slate-800">用户评价</h2>
               <button
                 onClick={() => setShowReviewForm(!showReviewForm)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
               >
                 {showReviewForm ? '取消评价' : '写评价'}
               </button>
             </div>
 
             {showReviewForm && (
-              <div className="mb-6 p-6 bg-blue-50 rounded-xl">
+              <div className="mb-6 p-6 bg-primary-50 rounded-xl">
                 <h3 className="font-semibold text-slate-800 mb-4">发表评价</h3>
                 
                 <div className="mb-4">
@@ -465,7 +465,7 @@ export default function AppDetailPage() {
                 <button
                   onClick={handleSubmitReview}
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? '提交中...' : '提交评价'}
                 </button>
