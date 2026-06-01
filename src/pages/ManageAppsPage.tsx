@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { mockApps, mockCategories } from '../data/mockApps';
 import { App } from '../types';
+import { useAppContext } from '../context/AppContext';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -36,7 +37,7 @@ function getCategoryName(category: string): string {
 }
 
 export default function ManageAppsPage() {
-  const [apps, setApps] = useState<App[]>(mockApps);
+  const { apps, categories, updateApp, refreshApps } = useAppContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
@@ -58,16 +59,12 @@ export default function ManageAppsPage() {
   const currentApps = apps.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleToggleStatus = (appId: string) => {
-    setApps((prev) =>
-      prev.map((app) =>
-        app.id === appId
-          ? {
-              ...app,
-              status: app.status === 'active' ? 'inactive' : 'active',
-            }
-          : app
-      )
-    );
+    const app = apps.find(a => a.id === appId);
+    if (app) {
+      updateApp(appId, {
+        status: app.status === 'active' ? 'inactive' : 'active',
+      });
+    }
   };
 
   const handleEdit = (appId: string) => {
@@ -122,24 +119,17 @@ export default function ManageAppsPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm() && editingApp) {
-      setApps((prev) =>
-        prev.map((app) =>
-          app.id === editingApp.id
-            ? {
-                ...app,
-                name: formData.name,
-                description: formData.description,
-                icon: formData.icon,
-                url: formData.url,
-                category: formData.category,
-                department: formData.department,
-                developer: formData.developer,
-                version: formData.version,
-                tags: formData.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
-              }
-            : app
-        )
-      );
+      updateApp(editingApp.id, {
+        name: formData.name,
+        description: formData.description,
+        icon: formData.icon,
+        url: formData.url,
+        category: formData.category,
+        department: formData.department,
+        developer: formData.developer,
+        version: formData.version,
+        tags: formData.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+      });
       setIsEditModalOpen(false);
       setEditingApp(null);
     }
