@@ -8,8 +8,12 @@ import FavoritesPage from "@/pages/FavoritesPage";
 import AdminPage from "@/pages/AdminPage";
 import PublishAppPage from "@/pages/PublishAppPage";
 import ManageAppsPage from "@/pages/ManageAppsPage";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function App() {
+  // 初始化主题
+  useTheme();
+  
   return (
     <Router>
       <Routes>

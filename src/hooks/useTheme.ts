@@ -15,18 +15,30 @@ const STORAGE_KEY = 'app-theme';
 
 export const useTheme = () => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return (saved as Theme) || 'blue';
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return (saved as Theme) || 'blue';
+    } catch {
+      return 'blue';
+    }
   });
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'blue') {
-      root.removeAttribute('data-theme');
-    } else {
-      root.setAttribute('data-theme', theme);
+    // 移除所有主题类名
+    themes.forEach(t => {
+      root.classList.remove(`theme-${t.value}`);
+    });
+    // 添加当前主题类名
+    if (theme !== 'blue') {
+      root.classList.add(`theme-${theme}`);
     }
-    localStorage.setItem(STORAGE_KEY, theme);
+    // 保存到 localStorage
+    try {
+      localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      // 忽略存储错误
+    }
   }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
