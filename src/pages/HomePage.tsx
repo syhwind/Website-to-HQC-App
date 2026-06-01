@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { appService, categoryService } from '@/services/api';
 
 interface App {
   id: string;
@@ -6,119 +8,20 @@ interface App {
   icon: string;
   description: string;
   viewCount: number;
+  favoriteCount: number;
+  rating: number;
+  categoryId: string;
+  department: string;
   createdAt: string;
-  category: string;
 }
-
-const mockApps: App[] = [
-  {
-    id: '1',
-    name: '企业邮箱',
-    icon: '📧',
-    description: '企业级邮件系统，支持日程管理和邮件归档',
-    viewCount: 12580,
-    createdAt: '2024-01-15',
-    category: '办公协作',
-  },
-  {
-    id: '2',
-    name: '项目管理',
-    icon: '📋',
-    description: '敏捷项目管理系统，支持看板和甘特图',
-    viewCount: 9860,
-    createdAt: '2024-02-20',
-    category: '办公协作',
-  },
-  {
-    id: '3',
-    name: '财务报销',
-    icon: '💰',
-    description: '移动端报销系统，审批流程自动化',
-    viewCount: 8540,
-    createdAt: '2024-01-28',
-    category: '财务',
-  },
-  {
-    id: '4',
-    name: '人力资源',
-    icon: '👥',
-    description: '员工档案管理、考勤和绩效评估',
-    viewCount: 7230,
-    createdAt: '2024-03-05',
-    category: '人力资源',
-  },
-  {
-    id: '5',
-    name: '客户管理',
-    icon: '🤝',
-    description: 'CRM系统，追踪销售线索和客户关系',
-    viewCount: 6920,
-    createdAt: '2024-02-10',
-    category: '销售',
-  },
-  {
-    id: '6',
-    name: '知识库',
-    icon: '📚',
-    description: '企业知识管理，文档协作和版本控制',
-    viewCount: 5680,
-    createdAt: '2024-03-12',
-    category: '办公协作',
-  },
-  {
-    id: '7',
-    name: '视频会议',
-    icon: '🎥',
-    description: '高清视频会议，支持屏幕共享和录制',
-    viewCount: 11200,
-    createdAt: '2024-01-05',
-    category: '办公协作',
-  },
-  {
-    id: '8',
-    name: '数据分析',
-    icon: '📊',
-    description: '可视化数据分析平台，支持自定义报表',
-    viewCount: 4890,
-    createdAt: '2024-02-25',
-    category: '数据',
-  },
-  {
-    id: '9',
-    name: '供应链管理',
-    icon: '🚚',
-    description: '采购、库存和物流全流程管理',
-    viewCount: 3450,
-    createdAt: '2024-03-18',
-    category: '运营',
-  },
-  {
-    id: '10',
-    name: 'IT服务台',
-    icon: '🔧',
-    description: '工单系统和IT资产管理系统',
-    viewCount: 4200,
-    createdAt: '2024-02-08',
-    category: 'IT服务',
-  },
-];
 
 interface Category {
   id: string;
   name: string;
-  count: number;
+  description: string;
+  icon: string;
+  appCount: number;
 }
-
-const categories: Category[] = [
-  { id: 'office', name: '办公协作', count: 28 },
-  { id: 'finance', name: '财务', count: 15 },
-  { id: 'hr', name: '人力资源', count: 12 },
-  { id: 'sales', name: '销售', count: 18 },
-  { id: 'data', name: '数据分析', count: 9 },
-  { id: 'it', name: 'IT服务', count: 11 },
-  { id: 'operations', name: '运营', count: 14 },
-  { id: 'marketing', name: '市场营销', count: 8 },
-];
 
 function AppCard({ app, featured = false }: { app: App; featured?: boolean }) {
   return (
@@ -129,7 +32,7 @@ function AppCard({ app, featured = false }: { app: App; featured?: boolean }) {
         }`}
       >
         <div className="flex items-start space-x-4">
-          <div className="text-4xl">{app.icon}</div>
+          <div className="text-4xl">{app.icon || '📱'}</div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-[#1E293B] truncate">
@@ -145,8 +48,8 @@ function AppCard({ app, featured = false }: { app: App; featured?: boolean }) {
               {app.description}
             </p>
             <div className="mt-4 flex items-center justify-between text-xs text-[#94A3B8]">
-              <span>浏览 {app.viewCount.toLocaleString()}</span>
-              <span>{app.category}</span>
+              <span>浏览 {app.viewCount?.toLocaleString() || 0}</span>
+              <span>{app.department || '内部应用'}</span>
             </div>
           </div>
         </div>
@@ -160,25 +63,45 @@ function SectionHeader({
   linkTo,
 }: {
   title: string;
-  linkTo: string;
+  linkTo?: string;
 }) {
   return (
     <div className="flex items-center justify-between mb-6">
       <h2 className="text-2xl font-bold text-[#1E293B]">{title}</h2>
-      <Link
-        to={linkTo}
-        className="text-[#2563EB] hover:text-[#1D4ED8] transition-colors text-sm font-medium"
-      >
-        查看更多 →
-      </Link>
+      {linkTo && (
+        <Link
+          to={linkTo}
+          className="text-[#2563EB] hover:text-[#1D4ED8] transition-colors text-sm font-medium"
+        >
+          查看更多 →
+        </Link>
+      )}
     </div>
   );
 }
 
-function CategoryNav() {
+function CategoryNav({ categories }: { categories: Category[] }) {
+  const getIcon = (id: string) => {
+    const icons: Record<string, string> = {
+      'productivity': '📋',
+      'communication': '💬',
+      'dev': '💻',
+      'design': '🎨',
+      'office': '📋',
+      'finance': '💰',
+      'hr': '👥',
+      'sales': '🤝',
+      'data': '📊',
+      'it': '🔧',
+      'operations': '🚚',
+      'marketing': '📢'
+    };
+    return icons[id] || '📱';
+  };
+
   return (
     <div className="mb-12">
-      <SectionHeader title="应用分类" linkTo="/category/all" />
+      <SectionHeader title="应用分类" />
       <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
         {categories.map((category) => (
           <Link
@@ -186,21 +109,12 @@ function CategoryNav() {
             to={`/category/${category.id}`}
             className="flex-shrink-0 bg-white px-6 py-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center min-w-[140px]"
           >
-            <div className="text-2xl mb-2">
-              {category.id === 'office' && '📋'}
-              {category.id === 'finance' && '💰'}
-              {category.id === 'hr' && '👥'}
-              {category.id === 'sales' && '🤝'}
-              {category.id === 'data' && '📊'}
-              {category.id === 'it' && '🔧'}
-              {category.id === 'operations' && '🚚'}
-              {category.id === 'marketing' && '📢'}
-            </div>
+            <div className="text-2xl mb-2">{getIcon(category.id)}</div>
             <div className="text-sm font-medium text-[#1E293B]">
               {category.name}
             </div>
             <div className="text-xs text-[#64748B] mt-1">
-              {category.count} 个应用
+              {category.appCount || 0} 个应用
             </div>
           </Link>
         ))}
@@ -209,14 +123,16 @@ function CategoryNav() {
   );
 }
 
-function FeaturedSection() {
-  const featuredApps = mockApps.filter((app) =>
-    ['1', '2', '7', '3', '5', '8'].includes(app.id)
-  );
+function FeaturedSection({ apps }: { apps: App[] }) {
+  const featuredApps = apps.slice(0, 6);
+
+  if (featuredApps.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mb-12">
-      <SectionHeader title="精选推荐" linkTo="/category/featured" />
+      <SectionHeader title="精选推荐" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {featuredApps.map((app) => (
           <AppCard key={app.id} app={app} featured />
@@ -226,14 +142,18 @@ function FeaturedSection() {
   );
 }
 
-function HotAppsSection() {
-  const hotApps = [...mockApps]
-    .sort((a, b) => b.viewCount - a.viewCount)
+function HotAppsSection({ apps }: { apps: App[] }) {
+  const hotApps = [...apps]
+    .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
     .slice(0, 8);
+
+  if (hotApps.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mb-12">
-      <SectionHeader title="热门应用" linkTo="/category/hot" />
+      <SectionHeader title="热门应用" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {hotApps.map((app) => (
           <AppCard key={app.id} app={app} />
@@ -243,17 +163,18 @@ function HotAppsSection() {
   );
 }
 
-function NewAppsSection() {
-  const newApps = [...mockApps]
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
+function NewAppsSection({ apps }: { apps: App[] }) {
+  const newApps = [...apps]
+    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
     .slice(0, 8);
+
+  if (newApps.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mb-12">
-      <SectionHeader title="最新上架" linkTo="/category/new" />
+      <SectionHeader title="最新上架" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {newApps.map((app) => (
           <AppCard key={app.id} app={app} />
@@ -264,12 +185,87 @@ function NewAppsSection() {
 }
 
 export default function HomePage() {
+  const [apps, setApps] = useState<App[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const [appsRes, categoriesRes] = await Promise.all([
+          appService.getApps({ page: 1, pageSize: 50 }),
+          categoryService.getAll()
+        ]);
+
+        if (appsRes.success && appsRes.data.items) {
+          setApps(appsRes.data.items);
+        }
+        
+        if (categoriesRes.success && categoriesRes.data) {
+          setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : []);
+        }
+      } catch (err) {
+        console.error('加载数据失败:', err);
+        setError('加载数据失败，请稍后重试');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">加载中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="text-5xl mb-4">⚠️</div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">加载失败</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            重新加载
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <FeaturedSection />
-      <CategoryNav />
-      <HotAppsSection />
-      <NewAppsSection />
+      {apps.length > 0 ? (
+        <>
+          <FeaturedSection apps={apps} />
+          {categories.length > 0 && <CategoryNav categories={categories} />}
+          <HotAppsSection apps={apps} />
+          <NewAppsSection apps={apps} />
+        </>
+      ) : (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📱</div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">暂无应用</h3>
+            <p className="text-gray-600">当前还没有任何应用，去管理后台添加吧！</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
