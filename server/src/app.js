@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const path = require('path');
 require('dotenv').config();
 
-const appsRouter = require('./routes/apps');
-const categoriesRouter = require('./routes/categories');
-const favoritesRouter = require('./routes/favorites');
-const uploadsRouter = require('./routes/uploads');
-const reviewsRouter = require('./routes/reviews');
+const appsRouter = require('./routes/apps-memory');
+const categoriesRouter = require('./routes/categories-memory');
+const favoritesRouter = require('./routes/favorites-memory');
+const uploadsRouter = require('./routes/uploads-memory');
+const reviewsRouter = require('./routes/reviews-memory');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
