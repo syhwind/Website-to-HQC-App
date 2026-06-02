@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockCategories } from '../data/mockApps';
+import { useAppContext } from '../context/AppContext';
 import { 
   generateAvatarUrl, 
   generateIconByColorAndName, 
