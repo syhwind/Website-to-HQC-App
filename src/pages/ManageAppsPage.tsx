@@ -37,10 +37,12 @@ function getCategoryName(category: string): string {
 }
 
 export default function ManageAppsPage() {
-  const { apps: appsFromContext, categories, updateApp, refreshApps } = useAppContext();
+  const { apps: appsFromContext, categories, updateApp, deleteApp, refreshApps } = useAppContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
+  const [deletingApp, setDeletingApp] = useState<App | null>(null);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
@@ -143,6 +145,27 @@ export default function ManageAppsPage() {
     setErrors({});
   };
 
+  const handleDeleteClick = (appId: string) => {
+    const app = apps.find(a => a.id === appId);
+    if (app) {
+      setDeletingApp(app);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletingApp) {
+      deleteApp(deletingApp.id);
+      setIsDeleteModalOpen(false);
+      setDeletingApp(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingApp(null);
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -222,6 +245,12 @@ export default function ManageAppsPage() {
                         className="px-3 py-1.5 text-xs font-medium bg-[#EFF6FF] text-[#2563EB] rounded-lg hover:bg-[#DBEAFE] transition-colors"
                       >
                         编辑
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(app.id)}
+                        className="px-3 py-1.5 text-xs font-medium bg-[#FEF2F2] text-[#EF4444] rounded-lg hover:bg-[#FEE2E2] transition-colors"
+                      >
+                        删除
                       </button>
                     </div>
                   </td>
@@ -458,6 +487,42 @@ export default function ManageAppsPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 删除确认对话框 */}
+      {isDeleteModalOpen && deletingApp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#1E293B]">确认删除</h2>
+                  <p className="text-[#64748B] mt-2">
+                    您确定要删除应用 "<span className="font-semibold">{deletingApp.name}</span>" 吗？
+                  </p>
+                  <p className="text-[#EF4444] text-sm mt-2">此操作不可撤销！</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={handleDeleteCancel}
+                  className="px-6 py-3 text-[#64748B] hover:text-[#1E293B] hover:bg-[#F8FAFC] rounded-lg transition-colors font-medium"
+                >
+                  取消
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteConfirm}
+                  className="px-6 py-3 bg-[#EF4444] text-white rounded-lg hover:bg-[#DC2626] transition-colors font-medium"
+                >
+                  确认删除
+                </button>
+              </div>
             </div>
           </div>
         </div>
