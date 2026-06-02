@@ -13,14 +13,16 @@ function AppCard({ app, featured = false }: { app: App; featured?: boolean }) {
         }`}
       >
         <div className="flex items-start space-x-4">
-          {app.icon.startsWith('http') ? (
+          {app.icon && app.icon.startsWith('http') ? (
             <img
               src={app.icon}
               alt={app.name}
               className="w-12 h-12 rounded-lg object-cover"
             />
           ) : (
-            <div className="text-4xl">{app.icon}</div>
+            <div className="w-12 h-12 rounded-lg bg-[#E2E8F0] flex items-center justify-center text-2xl">
+              {app.icon || '📱'}
+            </div>
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">

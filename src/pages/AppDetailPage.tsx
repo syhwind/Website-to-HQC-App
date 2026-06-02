@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { mockApps, mockCategories } from '../data/mockApps';
+import { mockCategories } from '../data/mockApps';
 import { CategoryTag } from '../components/common/CategoryTag';
 import { useFavoritesStore } from '../context/FavoritesContext';
+import { useAppContext } from '../context/AppContext';
 import { reviewService } from '../services/api';
 import { App, Review } from '../types';
 
@@ -46,7 +47,9 @@ export default function AppDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingReviews, setLoadingReviews] = useState(false);
 
-  const app = mockApps.find((a) => a.id === id) as App | undefined;
+  const { apps: appsFromContext } = useAppContext();
+  const apps = Array.isArray(appsFromContext) ? appsFromContext : [];
+  const app = apps.find((a) => a.id === id) as App | undefined;
   const categoryInfo = mockCategories.find((cat) => cat.id === app?.category);
 
   // 加载评价列表

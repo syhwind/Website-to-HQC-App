@@ -196,38 +196,40 @@ export default function ManageAppsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E2E8F0]">
-              {currentApps.map((app) => (
-                <tr key={app.id} className="hover:bg-[#F8FAFC] transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-3">
-                      <img
-                        src={app.icon}
-                        alt={app.name}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
-                      <div>
-                        <p className="font-medium text-[#1E293B]">{app.name}</p>
-                        <p className="text-xs text-[#94A3B8]">{app.developer}</p>
+              {currentApps.map((app) => {
+                if (!app || !app.id) return null;
+                return (
+                  <tr key={app.id} className="hover:bg-[#F8FAFC] transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={app.icon || 'https://via.placeholder.com/40'}
+                          alt={app.name || '应用图标'}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                        <div>
+                          <p className="font-medium text-[#1E293B]">{app.name || '未命名'}</p>
+                          <p className="text-xs text-[#94A3B8]">{app.developer || '未知开发者'}</p>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#64748B]">
-                    {getCategoryName(app.category)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        app.status === 'active'
-                          ? 'bg-[#ECFDF5] text-[#10B981]'
-                          : 'bg-[#FEF2F2] text-[#EF4444]'
-                      }`}
-                    >
-                      {app.status === 'active' ? '已上线' : '已下架'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#64748B]">
-                    {app.viewCount.toLocaleString()}
-                  </td>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#64748B]">
+                      {getCategoryName(app.category || '')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          app.status === 'active'
+                            ? 'bg-[#ECFDF5] text-[#10B981]'
+                            : 'bg-[#FEF2F2] text-[#EF4444]'
+                        }`}
+                      >
+                        {app.status === 'active' ? '已上线' : '已下架'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#64748B]">
+                      {(app.viewCount || 0).toLocaleString()}
+                    </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-2">
                       <button
