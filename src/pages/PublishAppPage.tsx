@@ -31,6 +31,7 @@ interface FormErrors {
 export default function PublishAppPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { addApp } = useAppContext();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
@@ -78,8 +79,37 @@ export default function PublishAppPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      alert('应用发布成功！');
-      navigate('/admin');
+      // 生成新应用ID
+      const newAppId = `app-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      // 创建新应用对象
+      const newApp = {
+        id: newAppId,
+        name: formData.name,
+        description: formData.description,
+        icon: formData.icon || generateAvatarUrl(formData.name),
+        url: formData.url,
+        category: formData.category || 'productivity',
+        department: formData.department || '内部应用',
+        tags: formData.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+        screenshots: [],
+        developer: formData.developer || '未知开发者',
+        version: formData.version || '1.0.0',
+        status: 'active' as const,
+        viewCount: 0,
+        favoriteCount: 0,
+        createdAt: new Date().toISOString(),
+        isFeatured: false,
+      };
+      
+      // 保存到全局状态
+      addApp(newApp);
+      
+      // 显示成功提示
+      alert(`应用"${newApp.name}"发布成功！`);
+      
+      // 导航到管理页面
+      navigate('/admin/apps');
     }
   };
 
