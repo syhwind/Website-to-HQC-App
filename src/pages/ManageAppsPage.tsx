@@ -37,7 +37,7 @@ function getCategoryName(category: string): string {
 }
 
 export default function ManageAppsPage() {
-  const { apps, categories, updateApp, refreshApps } = useAppContext();
+  const { apps: appsFromContext, categories, updateApp, refreshApps } = useAppContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<App | null>(null);
@@ -54,6 +54,8 @@ export default function ManageAppsPage() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
+  // 安全检查，确保apps是数组
+  const apps = Array.isArray(appsFromContext) ? appsFromContext : [];
   const totalPages = Math.ceil(apps.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentApps = apps.slice(startIndex, startIndex + ITEMS_PER_PAGE);

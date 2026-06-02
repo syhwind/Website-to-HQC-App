@@ -142,8 +142,12 @@ function NewAppsSection({ apps }: { apps: App[] }) {
 }
 
 export default function HomePage() {
-  const { apps, categories, loading, error, refreshApps } = useAppContext();
+  const { apps: appsFromContext, categories: categoriesFromContext, loading, error, refreshApps } = useAppContext();
   useTheme();
+
+  // 安全检查
+  const apps = Array.isArray(appsFromContext) ? appsFromContext : [];
+  const categories = Array.isArray(categoriesFromContext) ? categoriesFromContext : [];
 
   return (
     <div>

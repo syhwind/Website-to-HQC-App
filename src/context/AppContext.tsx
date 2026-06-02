@@ -36,7 +36,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const categoriesData = await categoriesRes.json();
         
         if (appsData.success && appsData.data) {
-          setApps(appsData.data);
+          // API返回 { items: [...], total: ... }，需要取 items
+          setApps(appsData.data.items || appsData.data);
         }
         if (categoriesData.success && categoriesData.data) {
           setCategories(categoriesData.data);
